@@ -47,3 +47,7 @@ class Battleship:
         for p in positions:
             self.boatboard[p] = boatname[0]
         return positions
+
+    def drawboard(self):
+        seps = '\n' + '+'.join('-'*10) + '\n'
+        return seps.join('|'.join(self.boatboard[x,y] for x in range(10)) for y in range(10))
