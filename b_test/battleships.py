@@ -30,3 +30,20 @@ class Boat:
             else:
                 return None
         return positions
+
+class Battleship:
+    def __init__(self):
+        self.hitboard = {(x, y) : False for x in range(10) for y in range(10)}
+        self.boatboard = {(x, y) : ' ' for x in range(10) for y in range(10)}
+        self.boats = {b : Boat(b, self.boatboard) for b in boats.keys()}
+
+    def placeboat(self, boatname : str, xy : list, rotated : bool = False):
+
+        positions = self.boats[boatname].canplaceboat(xy, rotated)
+
+        if not positions:
+            return None
+
+        for p in positions:
+            self.boatboard[p] = boatname[0]
+        return positions
