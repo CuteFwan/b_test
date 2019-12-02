@@ -68,8 +68,13 @@ class Battleship:
                 return 'X'
         return self.boatboard[xy]
 
-    def gethitboard(self, hit : bool = True):
-        return [xy for xy, v in self.hitboard.items() if v == hit]
+    def gethitboard(self, mode : str = 'full'):
+        if mode == 'full':
+            return {xy : v for xy, v in self.hitboard.items()}
+        elif mode == 'hit':
+            return {xy : v for xy, v in self.hitboard.items() if v == True}
+        elif mode == 'nothit':
+            return {xy : v for xy, v in self.hitboard.items() if v == False}
 
     def checkwin(self):
         for boat in self.boats.values():
@@ -78,14 +83,13 @@ class Battleship:
                     return False
         return True
 
-
-    def drawboard(self, draw : str = 'full'):
+    def drawboard(self, mode : str = 'full'):
         seps = '\n' + '-' + '+'.join('-'*11) + '\n'
         msg = '  |' + '|'.join(letters[:10]) + seps
-        if draw == 'full':
+        if mode == 'full':
             msg += seps.join(f'{y+1:2}' + '|' + '|'.join('X' if self.checkspace((x,y)) == True else self.checkspace((x,y)) for x in range(10)) for y in range(10))
-        elif draw == 'boats':
+        elif mode == 'boats':
             msg += seps.join(f'{y+1:2}' + '|' + '|'.join(self.boatboard[x,y] for x in range(10)) for y in range(10))
-        elif draw == 'hits':
+        elif mode == 'hits':
             msg += seps.join(f'{y+1:2}' + '|' + '|'.join('X' if self.hitboard[x,y] else ' ' for x in range(10)) for y in range(10))
         return msg
