@@ -30,6 +30,9 @@ class Boat:
                 temppos[rotated] += 1
             else:
                 return None
+        self.start = pos
+        self.rotated = rotated
+        self.positions = positions
         return positions
 
 class Battleship:
@@ -67,6 +70,14 @@ class Battleship:
 
     def gethitboard(self, hit : bool = True):
         return [xy for xy, v in self.hitboard.items() if v == hit]
+
+    def checkwin(self):
+        for boat in self.boats.values():
+            for pos in boat.positions:
+                if self.hitboard[pos] == False:
+                    return False
+        return True
+
 
     def drawboard(self, draw : str = 'full'):
         seps = '\n' + '-' + '+'.join('-'*11) + '\n'
