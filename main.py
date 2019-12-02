@@ -11,3 +11,10 @@ for b in boats.keys():
         coords = game.placeboat(b, pos, random.randint(0,1))
 
 print(game.drawboard())
+
+for h in range(10):
+    x, y = random.randint(0, 9),random.randint(0, 9)
+    spot = game.attack((x, y))
+    print(x, y, spot)
+
+print(game.drawboard())

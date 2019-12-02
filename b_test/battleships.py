@@ -48,6 +48,15 @@ class Battleship:
             self.boatboard[p] = boatname[0]
         return positions
 
+    def attack(self, xy : list):
+        spot = self.checkspace(xy)
+        if spot == True:
+            #Attacking spot alreadt hit
+            return False
+        else:
+            self.hitboard[xy] = True
+        return spot
+
     def checkspace(self, xy : list):
         if self.hitboard[xy] == True:
             # There had already been a hit here
