@@ -1,3 +1,4 @@
+from .utils import letters
 boats = {
         'Carrier' : 5,
         'Battleship' : 4,
@@ -49,20 +50,28 @@ class Battleship:
         return positions
 
     def attack(self, xy : list):
-        spot = self.checkspace(xy)
-        if spot == True:
-            #Attacking spot alreadt hit
+        if self.hitboard[xy] == True:
+            #Attacking spot already hit
             return False
-        else:
-            self.hitboard[xy] = True
+        spot = self.checkspace(xy)
+        self.hitboard[xy] = True
         return spot
 
     def checkspace(self, xy : list):
         if self.hitboard[xy] == True:
-            # There had already been a hit here
-            return True
+            if self.boatboard[xy] == ' ':
+                return 'O'
+            else:
+                return 'X'
         return self.boatboard[xy]
 
-    def drawboard(self):
-        seps = '\n' + '+'.join('-'*10) + '\n'
-        return seps.join('|'.join('X' if self.checkspace((x,y)) == True else self.checkspace((x,y)) for x in range(10)) for y in range(10))
+    def drawboard(self, draw : str = 'full'):
+        seps = '\n' + '-' + '+'.join('-'*11) + '\n'
+        msg = '  |' + '|'.join(letters[:10]) + seps
+        if draw == 'full':
+            msg += seps.join(f'{y+1:2}' + '|' + '|'.join('X' if self.checkspace((x,y)) == True else self.checkspace((x,y)) for x in range(10)) for y in range(10))
+        elif draw == 'boats':
+            msg += seps.join(f'{y+1:2}' + '|' + '|'.join(self.boatboard[x,y] for x in range(10)) for y in range(10))
+        elif draw == 'hits':
+            msg += seps.join(f'{y+1:2}' + '|' + '|'.join('X' if self.hitboard[x,y] else ' ' for x in range(10)) for y in range(10))
+        return msg
