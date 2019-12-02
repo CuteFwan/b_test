@@ -65,6 +65,9 @@ class Battleship:
                 return 'X'
         return self.boatboard[xy]
 
+    def gethitboard(self, hit : bool = True):
+        return [xy for xy, v in self.hitboard.items() if v == hit]
+
     def drawboard(self, draw : str = 'full'):
         seps = '\n' + '-' + '+'.join('-'*11) + '\n'
         msg = '  |' + '|'.join(letters[:10]) + seps
