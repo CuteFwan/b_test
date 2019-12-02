@@ -48,6 +48,12 @@ class Battleship:
             self.boatboard[p] = boatname[0]
         return positions
 
+    def checkspace(self, xy : list):
+        if self.hitboard[xy] == True:
+            # There had already been a hit here
+            return True
+        return self.boatboard[xy]
+
     def drawboard(self):
         seps = '\n' + '+'.join('-'*10) + '\n'
-        return seps.join('|'.join(self.boatboard[x,y] for x in range(10)) for y in range(10))
+        return seps.join('|'.join('X' if self.checkspace((x,y)) == True else self.checkspace((x,y)) for x in range(10)) for y in range(10))
