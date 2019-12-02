@@ -1,5 +1,6 @@
 from b_test import *
 
+
 game = Battleship()
 
 import random
@@ -8,7 +9,7 @@ for boat, size in boats.items():
     while coords is None:
         rotated = bool(random.randint(0,1))
         pos = (random.randint(0, (9 - size) if not rotated else 9), random.randint(0, (9 - size) if rotated else 9))
-        print(f'trying to place {boat} on {pos}')
+        #print(f'trying to place {boat} on {pos}')
         coords = game.placeboat(boat, pos, rotated)
 
 i = 0
@@ -30,7 +31,7 @@ while True:
 
     possible = game.gethitboard(False)
 
-    x, y = random.choice(possible) if not chain else chain.pop()
+    x, y = random.choice([(x, y) for x, y in possible if (x + y) % 2 == 0]) if not chain else chain.pop()
 
     spot = game.attack((x, y))
 
