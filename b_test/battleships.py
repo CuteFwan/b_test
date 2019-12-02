@@ -76,11 +76,16 @@ class Battleship:
         elif mode == 'nothit':
             return {xy : v for xy, v in self.hitboard.items() if v == False}
 
+    def checkboat(self, boat : str):
+        for pos in self.boat[boat].positions:
+            if self.hitboard[pos] == False:
+                return False
+        return True
+
     def checkwin(self):
         for boat in self.boats.values():
-            for pos in boat.positions:
-                if self.hitboard[pos] == False:
-                    return False
+            if self.checkboat(boat) == False:
+                return False
         return True
 
     def drawboard(self, mode : str = 'full'):
