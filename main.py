@@ -142,15 +142,3 @@ for t in range(1000):
     total += turns
 
 print(total/1000)
-
-
-
-'''
-print(f'won in {i} hits')
-
-print(game.drawboard('boats'))
-print('\n')
-print(game.drawboard('hits'))
-print('\n')
-print(game.drawboard())
-'''
