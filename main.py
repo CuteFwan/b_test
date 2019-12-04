@@ -25,30 +25,23 @@ def setupgame(game):
 def main():
     mygame = setupgame(Battleship())
     AIgame = setupgamerandomly(Battleship())
+    me = manually(mygame)
     AI = history(AIgame)
     
     myturn = True
     while True:
         if myturn:
-            print(AI.game.drawboard("hits"))
-            print(mygame.drawboard("full"))
-            spot = False
-            while spot == False:
-                res = input("Attack? ")
-                pos = lettertonum(res[0]), int(res[1:]) - 1
-                spot = AI.game.attack(pos)
-                if spot == False:
-                    print("Already hit that spot, try again.")
             myturn = False
-            print(spot)
+            spot = me.nextturn(AI.game)
+            print(f"You attack {numtoletter(spot[0][0])}{spot[0][1]+1}{f' and hit opponent {spot[1]}' if spot[1] != ' ' else ''}")
             if AI.game.checkwin():
                 print("You win!")
                 break
         else:
-            spot = AI.nextturn(mygame)
+            spot = AI.nextturn(me.game)
             myturn = True
             print(f"Opponent attacks {numtoletter(spot[0][0])}{spot[0][1]+1}{f' and hit your {spot[1]}' if spot[1] != ' ' else ''}")
-            if mygame.checkwin():
+            if me.game.checkwin():
                 print("You lose!")
                 break
     AI.save()
@@ -78,7 +71,7 @@ def aigame():
     AI2.save()
         
 
-aigame()
+main()
 
 
 with open('b_test/history.json', 'r') as f:

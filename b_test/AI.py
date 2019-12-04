@@ -2,6 +2,24 @@ import random
 import json
 
 from .battleships import boats
+from .utils import *
+
+class manually:
+    def __init__(self, game):
+        self.game = game
+    def nextturn(self, opponentgame):
+
+        print(opponentgame.drawboard("hits"))
+        print(self.game.drawboard("full"))
+        spot = False
+        while spot == False:
+            res = input("Attack? ")
+            pos = lettertonum(res[0]), int(res[1:]) - 1
+            spot = opponentgame.attack(pos)
+            if spot == False:
+                print("Already hit that spot, try again.")
+
+        return pos, spot
 
 class rando:
     def __init__(self, game):
