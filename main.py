@@ -25,7 +25,7 @@ def setupgame(game):
 def main():
     mygame = setupgame(Battleship())
     AIgame = setupgamerandomly(Battleship())
-    AI = stats(AIgame)
+    AI = history(AIgame)
     
     myturn = True
     while True:
@@ -51,8 +51,39 @@ def main():
             if mygame.checkwin():
                 print("You lose!")
                 break
+    AI.save()
 
-main()
+def aigame():
+    AI1game = setupgamerandomly(Battleship())
+    AI2game = setupgamerandomly(Battleship())
+    AI1 = stats(AI1game)
+    AI2 = history(AI2game)
 
+    turn = True
+    while True:
+        if turn:
+            AI1.nextturn(AI2.game)
+            turn = False
+            if AI2.game.checkwin():
+                print(f'AI1 wins')
+                break
+        else:
+            AI2.nextturn(AI1.game)
+            turn = True
+            if AI1.game.checkwin():
+                print(f'AI2 wins')
+                break
+    print(AI1.game.drawboard())
+    print(AI2.game.drawboard())
+    AI2.save()
+        
+
+aigame()
+
+
+with open('b_test/history.json', 'r') as f:
+    data = json.load(f)
+    print('\n'.join(' '.join(f"{j:3}"for j in data[i: i+10]) for i in range(0,100,10)))
+        
 
 
