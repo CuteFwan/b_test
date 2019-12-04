@@ -1,3 +1,6 @@
+import random
+import json
+
 class rando:
     def __init__(self, game):
         self.game = game
