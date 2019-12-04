@@ -90,3 +90,33 @@ class stats:
             self.chain = list(set(self.chain))
 
         return (x,y), spot
+
+class history:
+    def __init__(self, game):
+        self.game = game
+        self.chain = []
+        with open('history.json', 'r') as f:
+            self.hithistory = json.load(f)
+
+    def nextturn(self, opponentgame):
+        possible = opponentgame.gethitboard('nothit').keys()
+
+        aliveboats = [boat for boat in boats.keys() if opponentgame.checkboat(boat) == False]
+        statboard = gethitboardstats(opponentgame.gethitboard('full'), aliveboats)
+        statboard = {(x, y) : statboardford[x,y] + self.hithistory[x + y * 10] y in range(10) for x in range(10)}
+
+        x, y = random.choices(list(statboard.keys()), list(statboard.values()))[0] if not self.chain else self.chain.pop()
+
+        spot = opponentgame.attack((x, y))
+
+        if spot != ' ':
+            surrounding = [(x + xx, y + yy) for xx in range(-1,2,1) for yy in range(-1,2,1) if (0 <= x + xx < 10) and (0 <= y + yy < 10) and (xx == 0 or yy == 0) and not (xx == 0 and yy == 0)]
+            self.chain.extend(list(set(surrounding) & set(possible)))
+            self.chain = list(set(self.chain))
+
+            self.hithistory[x + 10 * y] += 1
+        else:
+            self.hithistory[x + 10 * y] -= 1
+
+        return (x,y), spot
+    
