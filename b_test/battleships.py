@@ -96,5 +96,5 @@ class Battleship:
         elif mode == 'boats':
             msg += seps.join(f'{y+1:2}' + '|' + '|'.join(self.boatboard[x,y] for x in range(10)) for y in range(10))
         elif mode == 'hits':
-            msg += seps.join(f'{y+1:2}' + '|' + '|'.join('X' if self.hitboard[x,y] else ' ' for x in range(10)) for y in range(10))
+            msg += seps.join(f'{y+1:2}' + '|' + '|'.join(self.checkspace((x,y)) if self.hitboard[x,y] else ' ' for x in range(10)) for y in range(10))
         return msg
