@@ -2,6 +2,23 @@ from b_test import *
 import random
 
 def setupgamerandomly(game):
+    """
+    Randomly places boats on a game's board.
+    Keeps trying until all boats fit.
+
+    Need to add a timeout if the board gets into a configuration
+    where no more boats can fit, but this isn't necessary for standard
+    battleships.
+
+    Parameters
+    ----------
+    game: :class:`Battleship`
+        The game to populate ships upon.
+    Returns
+    -------
+    :class:`Battleship`
+        The populated game.
+    """
     for boat, size in boats.items():
         coords = None
         while coords is None:
@@ -11,6 +28,18 @@ def setupgamerandomly(game):
             coords = game.placeboat(boat, pos, rotated)
     return game
 def setupgame(game):
+    """
+    Manually calls input() to populate a given game's board.
+
+    Parameters
+    ----------
+    game: :class:`Battleship`
+        The game to populate ships upon.
+    Returns
+    -------
+    :class:`Battleship`
+        The populated game.
+    """
     for boat, size in boats.items():
         coords = None
         while coords is None:
@@ -23,6 +52,11 @@ def setupgame(game):
 
 
 def main():
+    """
+    Human vs AI battleships game.
+    Human game is set up manually and AI game is set up randomly.
+    Could be improved with a better system to select which AI to use.
+    """
     mygame = setupgame(Battleship())
     AIgame = setupgamerandomly(Battleship())
     me = manually(mygame)
@@ -47,36 +81,26 @@ def main():
     AI.save()
 
 def aigame():
+    """
+    Purely AI vs AI battleships game.
+    """
     AI1game = setupgamerandomly(Battleship())
     AI2game = setupgamerandomly(Battleship())
     AI1 = stats(AI1game)
     AI2 = history(AI2game)
+    players = [AI1, AI2]
 
-    turn = True
+    turn = False
     while True:
-        if turn:
-            AI1.nextturn(AI2.game)
-            turn = False
-            if AI2.game.checkwin():
-                print(f'AI1 wins')
-                break
-        else:
-            AI2.nextturn(AI1.game)
-            turn = True
-            if AI1.game.checkwin():
-                print(f'AI2 wins')
-                break
+        players[turn].nextturn(players[not turn].game)
+        turn = not turn
+        if players[not turn].game.checkwin():
+            print(f'AI{int(turn)+1} wins')
+            break
     print(AI1.game.drawboard())
     print(AI2.game.drawboard())
+    AI1.save()
     AI2.save()
         
 
 main()
-
-
-with open('b_test/history.json', 'r') as f:
-    data = json.load(f)
-    print('\n'.join(' '.join(f"{j:3}"for j in data[i: i+10]) for i in range(0,100,10)))
-        
-
-

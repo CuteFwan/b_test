@@ -4,11 +4,47 @@ import json
 from .battleships import boats
 from .utils import *
 
-class manually:
+class AI:
+    """
+    The base class of battleship AIs.
+
+    Classes derived from this should override the :meth:`AI.nextturn` method
+    to do the AI logic.
+    """
+    def nextturn(self, opponentgame):
+        """
+        The method to override to do the AI logic.
+
+        Should make a single attack upon the opponent's game using the :meth:`Battleship.attack` method
+        and return the position and result of the attack.
+
+        Parameters
+        ----------
+        opponentgame: :class:`Battleship`
+            The opponent's game.
+
+        Returns
+        -------
+        tuple[:class:`tuple`, :class:`str`]
+            The position and the result of the attack.
+        """
+        raise NotImplementedError('Derived classes need to implement this.')
+
+    def save(self):
+        """
+        Optional method to save any board states for future runs.
+        """
+        pass
+
+
+class manually(AI):
+    """
+    Manual play. All logic is given by user input.
+    """
+
     def __init__(self, game):
         self.game = game
     def nextturn(self, opponentgame):
-
         print(opponentgame.drawboard("hits"))
         print(self.game.drawboard("full"))
         spot = False
@@ -21,17 +57,31 @@ class manually:
 
         return pos, spot
 
-class rando:
+class rando(AI):
+    """
+    Baseline rng AI.
+
+    Picks a spot randomly on the board that hasn't been hit yet.
+
+    Generally performs poorly, averaging around 95.5/100 shots to win in a test of 1000 games.
+    """
     def __init__(self, game):
         self.game = game
     def nextturn(self, opponentgame):
-
-        x, y = random.choice(list(game.gethitboard('nothit').keys()))
-        spot = game.attack((x, y))
+        x, y = random.choice(list(opponentgame.gethitboard('nothit').keys()))
+        spot = opponentgame.attack((x, y))
 
         return (x,y), spot
 
-class hunt:
+class hunt(AI):
+    """
+    Hunt and Target AI.
+
+    Fires randomly at every other spot until a hit has been confirmed before focusing on adjacent spots to sink a ship.
+    Uses a simple list to keep track of possible ship locations in adjacent spots.
+
+    Performs considerably better, averaging around 61/100 shots to win in a test of 1000 games.
+    """
     def __init__(self, game):
         self.game = game
         self.chain = []
@@ -88,7 +138,17 @@ def gethitboardstats(board, boatsalive):
                     
     return statboard
 
-class stats:
+class stats(AI):
+    """
+    Statistics AI.
+
+    Generates a distribution of possible ship locations based on the spots that had already been hit
+    to choose the next spot to attack. Switches to the same method as above to finish sinking a ship
+    by firing upon adjacent spots upon hit.
+
+    Performs marginally better, averaging around 50/100 shots to win in a test of 1000 games.
+    Run time is generally longer than the previous methods.
+    """
     def __init__(self, game):
         self.game = game
         self.chain = []
@@ -98,7 +158,6 @@ class stats:
 
         aliveboats = [boat for boat in boats.keys() if opponentgame.checkboat(boat) == False]
         statboard = gethitboardstats(opponentgame.gethitboard('full'), aliveboats)
-
 
         x, y = random.choices(list(statboard.keys()), list(statboard.values()))[0] if not self.chain else self.chain.pop()
 
@@ -111,7 +170,15 @@ class stats:
 
         return (x,y), spot
 
-class history:
+class history(AI):
+    """
+    history AI.
+
+    Combines the above method with a simple history of shots landed to try to learn the opponent's ship placement.
+
+    Performance uncertain due to not having a way to automate ship placement in a consistently non-random way yet.
+    Seems to run roughly as well as the stats AI.
+    """
     def __init__(self, game):
         self.game = game
         self.chain = []
@@ -120,6 +187,23 @@ class history:
             self.hithistory = {(x,y) : data[x+y*10] for y in range(10) for x in range(10)}
 
     def normalize(self, statboard):
+        """
+        Method to normalize the values in a dict to sum to 1.
+        Example:
+        {a : 1, b : 1} -> {a : 0.5, b : 0.5}
+        {a : 1, b : 1, c : 1} -> {a : 0.33, b : 0.33, c : 0.33}
+        {a : 1, b : 2} -> {a : 0.33, b : 0.66}
+
+        Parameters
+        ----------
+        statboard: :class:`dict`
+            The dict to normalize
+            
+        Returns
+        -------
+        :class:`dict`
+            The normalized dict
+        """
         total = sum(statboard.values())
         if total == 0:
             return statboard
